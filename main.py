@@ -46,11 +46,12 @@ while running: # basically runs forever unless we tell it to stop
 
             click_row = int((mouse_x + settings.master_offset) / settings.master_square_h)
             click_col = int((mouse_y + settings.master_offset) / settings.master_square_w)
-            player = turn % 2 + 1 # player = 1 is white, player = 2 is black
+            
             
             if is_legal_move(board, click_row, click_col):
+                player = turn % 2 + 1 # player = 1 is white, player = 2 is black
                 turn += 1
-                make_move(click_row, click_col, player) # making the move in the array (backend)
+                make_move(board, click_row, click_col, player) # making the move in the array (backend)
                 print("Row: " + str(click_row) + ", Col: " + str(click_col))
 
             else:
@@ -61,7 +62,7 @@ while running: # basically runs forever unless we tell it to stop
             
     text = pygame.font.Font('assets/font.otf', 32).render("Turn: " + str(turn), True, (255, 255, 255))
     screen.blit(text, (settings.master_text_w, settings.master_text_h))
-    render(screen, white_point, black_point) # rendering the move on the screen (frontend)
+    render(screen, board, white_point, black_point) # rendering the move on the screen (frontend)
     pygame.display.update() # update the display with all the .blit() changes 
 
 pygame.quit()
