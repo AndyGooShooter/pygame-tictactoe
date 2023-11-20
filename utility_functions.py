@@ -3,8 +3,8 @@ import pygame
 import settings
 
 
-### UPDATE DISPLAY
-# the array
+
+### BOARD ARRAY
 board = [
     [-1, -1, -1, -1, -1, -1, -1, -1], # row 0
     
@@ -17,22 +17,24 @@ board = [
     [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 7
     [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 8
 ]
+def legal_move(row, col):
+    if row > 8 or row < 1 or col > 8 or col < 1: # if the square is already occupied
+        return False
+    if(board[row][col] != 0): # if the square is already occupied
+        return False
+    return True
 
-player = turn % 2 # 0 is white, 1 is black
-            
-board[click_col][click_row] = player # making the move in the array
+def make_move(row, col, player):
+    
+    board[row][col] = player
+    return 0
 
-# getting coordinates for the point
-def rendering_points(row, col):
-    build_x = settings.master_offset + (row - 1) * settings.master_square_w 
-    build_y = settings.master_offset + (col - 1) * settings.master_square_h
-    return (build_x, build_y)
-build_x = settings.master_offset + (click_row - 1) * settings.master_square_w 
-build_y = settings.master_offset + (click_col - 1) * settings.master_square_h
-
-if player == 0: # making the move on the display
-    screen.blit(white_point, (build_x, build_y))
-else:
-    screen.blit(black_point, (build_x, build_y))
-
-turn += 1
+def render(screen, white_point, black_point):
+    for i in range(1, 9):
+        for j in range(1, 9):
+            build_x = settings.master_center_offset + settings.master_offset + (i - 1) * settings.master_square_w
+            build_y = settings.master_center_offset + settings.master_offset + (j - 1) * settings.master_square_h
+            if board[i][j] == 1:
+                screen.blit(white_point, (build_x, build_y))
+            elif board[i][j] == 2:
+                screen.blit(black_point, (build_x, build_y))
