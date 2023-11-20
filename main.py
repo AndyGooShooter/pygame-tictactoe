@@ -1,10 +1,10 @@
 ### IMPORTS (libraries and functions from other files)
 import pygame
-import settings as s
+import settings
 
 ### GAME CONFIGURATION
 pygame.init()
-screen = pygame.display.set_mode((s.master_h, s.master_w))
+screen = pygame.display.set_mode((settings.master_h, settings.master_w))
 turn = 0 # turn counter, starts with 0
          # even numbers are white, odd numbers are black
 # assets
@@ -12,11 +12,12 @@ bg = pygame.image.load("Assets/bg.png")
 white_point = pygame.image.load("Assets/white_point.png")
 black_point = pygame.image.load("Assets/black_point.png")
 
-bg = pygame.transform.scale(bg, (s.master_h, s.master_w))
-white_point = pygame.transform.scale(white_point, (s.master_h, s.master_w))
-black_point = pygame.transform.scale(black_point, (s.master_h, s.master_w))
+bg = pygame.transform.scale(bg, (settings.master_h, settings.master_w))
+white_point = pygame.transform.scale(white_point, (settings.master_h, settings.master_w))
+black_point = pygame.transform.scale(black_point, (settings.master_h, settings.master_w))
 
-# the array
+running = True
+
 board = [
     [-1, -1, -1, -1, -1, -1, -1, -1], # row 0
     
@@ -30,10 +31,8 @@ board = [
     [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 8
 ]
 
-
-
 ### GAME LOOP
-while True: # basically runs forever unless we tell it to stop
+while running: # basically runs forever unless we tell it to stop
     screen.blit(bg, (0, 0)) 
     
     for event in pygame.event.get(): # here we check everything that happens in the game
@@ -41,8 +40,8 @@ while True: # basically runs forever unless we tell it to stop
         
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            click_row = int((mouse_x - master_offset) / master_square_w) + 1
-            click_col = int((mouse_y - master_offset) / master_square_h) + 1
+            click_row = int((mouse_x - settings.master_offset) / settings.master_square_w) + 1
+            click_col = int((mouse_y - settings.master_offset) / settings.master_square_h) + 1
             
             print("Row: " + str(click_row) + ", Col: " + str(click_col))
             
@@ -52,8 +51,8 @@ while True: # basically runs forever unless we tell it to stop
             board[click_col][click_row] = player # making the move in the array
             
             # getting coordinates for the point
-            build_x = master_offset + (click_row - 1) * master_square_w 
-            build_y = master_offset + (click_col - 1) * master_square_h
+            build_x = settings.master_offset + (click_row - 1) * settings.master_square_w 
+            build_y = settings.master_offset + (click_col - 1) * settings.master_square_h
    
             if player == 0: # making the move on the display
                 screen.blit(white_point, (build_x, build_y))
@@ -63,7 +62,8 @@ while True: # basically runs forever unless we tell it to stop
             turn += 1
             
         if event.type == pygame.QUIT:
-            pygame.quit()
-            quit()
-            
-    pygame.display.flip() # update the display with all the .blit() changes 
+            running = False
+        
+    pygame.display.update() # update the display with all the .blit() changes 
+
+pygame.quit()
