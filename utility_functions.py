@@ -2,34 +2,25 @@
 import pygame
 import settings
 
+dx = [0, 0, 1, 1, 1]
+dy = [-1, 1, -1, 0, 1]
 
+def is_in_matrix(x:int, y:int):
+    return (0 < x < 9 and 0 < y < 9)
 
-### BOARD ARRAY
-board = [
-    [-1, -1, -1, -1, -1, -1, -1, -1], # row 0
-    
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 1
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 2
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 3
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 4
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 5
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 6
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 7
-    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 8
-]
-def legal_move(row, col):
-    if row > 8 or row < 1 or col > 8 or col < 1: # if the square is already occupied
+def is_legal_move(board, row:int, col:int):
+    if not is_in_matrix(row, col): # if the square is outside the matrix
         return False
+    
     if(board[row][col] != 0): # if the square is already occupied
         return False
     return True
 
-def make_move(row, col, player):
-    
+def make_move(board, row, col, player):
     board[row][col] = player
     return 0
 
-def render(screen, white_point, black_point):
+def render(screen, board, white_point, black_point):
     for i in range(1, 9):
         for j in range(1, 9):
             build_x = settings.master_center_offset + settings.master_offset + (i - 1) * settings.master_square_w
@@ -38,3 +29,44 @@ def render(screen, white_point, black_point):
                 screen.blit(white_point, (build_x, build_y))
             elif board[i][j] == 2:
                 screen.blit(black_point, (build_x, build_y))
+
+def check_dir(x:int, y:int, direction:int, cnt:int, board:list[list[int]], vis:list[list[bool]]) -> bool:
+    if cnt == 4:
+        return True
+
+    vis[x][y] = True
+
+    new_x = x + dx[direction]
+    new_y = y + dy[direction]
+
+    if is_in_matrix(new_x, new_y) and not vis[new_x][new_y] and board[x][y] == board[new_x][new_y]:
+        return check_dir(new_x, new_y, direction, cnt + 1, board, vis)
+    
+    return False
+
+
+def check_win(board:list[list[int]]) -> bool:
+    vis = [[False for _ in range(1, 9)] for _ in range(1, 9)]
+    
+    for i in range(1, 9):
+        for j in range(1, 9):
+            if board[i][j]:
+                for d in range(5):
+                    new_i = i + dx[d]
+                    new_j = j + dy[d]
+                    if (is_in_matrix(new_i, new_j) and not vis[new_i][new_j]
+                        and board[new_i][new_j] == board[i][j]):
+                        r = check_dir(i, j, d, 1, board, vis)
+
+                        if r:
+                            return True
+
+    return False
+
+if __name__ == '__main__':
+    b = [[0 for i in range(9)] for i in range(9)]
+
+    b[1][1] = b[2][2] = b[3][3] = 1
+    b[1][2] = b[1][3] = b[1][4] = 1
+
+    print(check_win(b))

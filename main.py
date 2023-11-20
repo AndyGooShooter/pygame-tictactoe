@@ -2,10 +2,8 @@
 import pygame
 import settings
 from utility_functions import render
-from utility_functions import legal_move
+from utility_functions import is_legal_move
 from utility_functions import make_move
-
-
 
 ### GAME CONFIGURATION
 pygame.init()
@@ -13,8 +11,6 @@ screen = pygame.display.set_mode((settings.master_w, settings.master_h))
 turn = 0 # turn counter, starts with 0
          # even numbers are white, odd numbers are black
 running = True  
-         
-         
          
 ### ASSETS
 bg = pygame.image.load("assets/bg.png")
@@ -25,7 +21,19 @@ bg = pygame.transform.scale(bg, (settings.master_w, settings.master_h))
 white_point = pygame.transform.scale(white_point, (settings.master_point_w, settings.master_point_h))
 black_point = pygame.transform.scale(black_point, (settings.master_point_w, settings.master_point_h))
 
-
+### INITIALISE BOARD ARRAY
+board = [
+    [-1, -1, -1, -1, -1, -1, -1, -1], # row 0
+    
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 1
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 2
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 3
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 4
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 5
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 6
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 7
+    [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 8
+]
 
 ### GAME LOOP
 while running: # basically runs forever unless we tell it to stop
@@ -40,7 +48,7 @@ while running: # basically runs forever unless we tell it to stop
             click_col = int((mouse_y + settings.master_offset) / settings.master_square_w)
             player = turn % 2 + 1 # player = 1 is white, player = 2 is black
             
-            if legal_move(click_row, click_col):
+            if is_legal_move(board, click_row, click_col):
                 turn += 1
                 make_move(click_row, click_col, player) # making the move in the array (backend)
                 print("Row: " + str(click_row) + ", Col: " + str(click_col))
