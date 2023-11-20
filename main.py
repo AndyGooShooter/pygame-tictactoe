@@ -9,7 +9,7 @@ from utility_functions import make_move
 
 ### GAME CONFIGURATION
 pygame.init()
-screen = pygame.display.set_mode((settings.master_h, settings.master_w))
+screen = pygame.display.set_mode((settings.master_w, settings.master_h))
 turn = 0 # turn counter, starts with 0
          # even numbers are white, odd numbers are black
 running = True  
@@ -17,13 +17,13 @@ running = True
          
          
 ### ASSETS
-bg = pygame.image.load("Assets/bg.png")
-white_point = pygame.image.load("Assets/white_point.png")
-black_point = pygame.image.load("Assets/black_point.png")
+bg = pygame.image.load("assets/bg.png")
+white_point = pygame.image.load("assets/white_point.png")
+black_point = pygame.image.load("assets/black_point.png")
 
-bg = pygame.transform.scale(bg, (settings.master_h, settings.master_w))
-white_point = pygame.transform.scale(white_point, (settings.master_point_h, settings.master_point_w))
-black_point = pygame.transform.scale(black_point, (settings.master_point_h, settings.master_point_w))
+bg = pygame.transform.scale(bg, (settings.master_w, settings.master_h))
+white_point = pygame.transform.scale(white_point, (settings.master_point_w, settings.master_point_h))
+black_point = pygame.transform.scale(black_point, (settings.master_point_w, settings.master_point_h))
 
 
 
@@ -36,8 +36,8 @@ while running: # basically runs forever unless we tell it to stop
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
 
-            click_row = int((mouse_x + settings.master_offset) / settings.master_square_w)
-            click_col = int((mouse_y + settings.master_offset) / settings.master_square_h)
+            click_row = int((mouse_x + settings.master_offset) / settings.master_square_h)
+            click_col = int((mouse_y + settings.master_offset) / settings.master_square_w)
             player = turn % 2 + 1 # player = 1 is white, player = 2 is black
             
             if legal_move(click_row, click_col):
@@ -51,7 +51,8 @@ while running: # basically runs forever unless we tell it to stop
         if event.type == pygame.QUIT:
             running = False
             
-            
+    text = pygame.font.Font('assets/font.otf', 32).render("Turn: " + str(turn), True, (255, 255, 255))
+    screen.blit(text, (settings.master_text_w, settings.master_text_h))
     render(screen, white_point, black_point) # rendering the move on the screen (frontend)
     pygame.display.update() # update the display with all the .blit() changes 
 
