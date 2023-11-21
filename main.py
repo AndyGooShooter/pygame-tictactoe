@@ -1,17 +1,14 @@
 ### IMPORTS (libraries and functions from other files)
 import pygame
 import settings
-from utility_functions import render
-from utility_functions import is_legal_move
-from utility_functions import make_move
+from utility_functions import render, is_legal_move, make_move, check_win
 
 ### GAME CONFIGURATION
 pygame.init()
 screen = pygame.display.set_mode((settings.master_w, settings.master_h))
 turn = 0 # turn counter, starts with 0
          # even numbers are white, odd numbers are black
-running = True  
-         
+
 ### ASSETS
 bg = pygame.image.load("assets/bg.png")
 white_point = pygame.image.load("assets/white_point.png")
@@ -34,6 +31,8 @@ board = [
     [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 7
     [-1,     0, 0, 0, 0, 0, 0, 0, 0], # row 8
 ]
+winner = -1
+running = True
 
 ### GAME LOOP
 while running: # basically runs forever unless we tell it to stop
@@ -47,12 +46,15 @@ while running: # basically runs forever unless we tell it to stop
             click_row = int((mouse_x + settings.master_offset) / settings.master_square_h)
             click_col = int((mouse_y + settings.master_offset) / settings.master_square_w)
             
-            
             if is_legal_move(board, click_row, click_col):
                 player = turn % 2 + 1 # player = 1 is white, player = 2 is black
                 turn += 1
                 make_move(board, click_row, click_col, player) # making the move in the array (backend)
                 print("Row: " + str(click_row) + ", Col: " + str(click_col))
+                winner = check_win(board)
+                if winner != -1:
+                    running = False
+                    print(f'Player {winner} has won!')
 
             else:
                 print("Illegal move")

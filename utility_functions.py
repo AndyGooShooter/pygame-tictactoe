@@ -1,5 +1,4 @@
 ### IMPORTS (libraries and functions from other files)
-import pygame
 import settings
 
 dx = [0, 0, 1, 1, 1]
@@ -18,7 +17,6 @@ def is_legal_move(board, row:int, col:int):
 
 def make_move(board, row, col, player):
     board[row][col] = player
-    return 0
 
 def render(screen, board, white_point, black_point):
     for i in range(1, 9):
@@ -32,6 +30,7 @@ def render(screen, board, white_point, black_point):
 
 def check_dir(x:int, y:int, direction:int, cnt:int, board:list[list[int]], vis:list[list[bool]]) -> bool:
     if cnt == 4:
+        board[x][y] = 100
         return True
 
     vis[x][y] = True
@@ -40,13 +39,17 @@ def check_dir(x:int, y:int, direction:int, cnt:int, board:list[list[int]], vis:l
     new_y = y + dy[direction]
 
     if is_in_matrix(new_x, new_y) and not vis[new_x][new_y] and board[x][y] == board[new_x][new_y]:
-        return check_dir(new_x, new_y, direction, cnt + 1, board, vis)
+        r = check_dir(new_x, new_y, direction, cnt + 1, board, vis)
+        if r:
+            board[x][y] = 100
+        
+        return r
     
     return False
 
 
-def check_win(board:list[list[int]]) -> bool:
-    vis = [[False for _ in range(1, 9)] for _ in range(1, 9)]
+def check_win(board:list[list[int]]):
+    vis = [[False for _ in range(9)] for _ in range(9)]
     
     for i in range(1, 9):
         for j in range(1, 9):
@@ -59,9 +62,9 @@ def check_win(board:list[list[int]]) -> bool:
                         r = check_dir(i, j, d, 1, board, vis)
 
                         if r:
-                            return True
+                            return board[i][j]
 
-    return False
+    return -1
 
 if __name__ == '__main__':
     b = [[0 for i in range(9)] for i in range(9)]
