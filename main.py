@@ -1,7 +1,8 @@
 ### IMPORTS (libraries and functions from other files)
 import pygame
 import settings
-from utility_functions import render, is_legal_move, make_move, check_win
+import time
+from utility_functions import render, is_legal_move, make_move, check_win, draw_line
 
 ### GAME CONFIGURATION
 pygame.init()
@@ -51,20 +52,46 @@ while running: # basically runs forever unless we tell it to stop
                 turn += 1
                 make_move(board, click_row, click_col, player) # making the move in the array (backend)
                 print("Row: " + str(click_row) + ", Col: " + str(click_col))
+                
                 winner = check_win(board)
-                if winner != -1:
-                    running = False
-                    print(f'Player {winner} has won!')
-
+                
             else:
                 print("Illegal move")
             
         if event.type == pygame.QUIT:
             running = False
-            
-    text = pygame.font.Font('assets/font.otf', 32).render("Turn: " + str(turn), True, (255, 255, 255))
-    screen.blit(text, (settings.master_text_w, settings.master_text_h))
+        
+    # text display
+    text = "Turn: " + str(turn) + ", Player: "
+    if winner == 1:
+        text = "White has won!"
+    elif winner == 2:
+        text = "Black has won!"
+    elif turn % 2 == 0:
+        text += "White"
+    else:
+        text += "Black"       
+    rendered_text = pygame.font.Font('assets/font.otf', 32).render(text, True, (255, 255, 255))
+    screen.blit(rendered_text, (settings.master_text_w, settings.master_text_h))
+    
+    # board and points display
     render(screen, board, white_point, black_point) # rendering the move on the screen (frontend)
+    
+    # line display (if winner exists)
+    if winner != -1:
+        draw_line(screen, board)
+        
     pygame.display.update() # update the display with all the .blit() changes 
+    
+    # check the winner (obtained from the last move, -1 if none, 1 if white, 2 if black)
+    if winner != -1:
+        running = False
+        print(f'Player {winner} has won!')
+        
+running = True # reset the running variable to True, so that we can start the game once more        
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
 pygame.quit()
